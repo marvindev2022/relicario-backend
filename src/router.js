@@ -1,35 +1,11 @@
 const express = require("express");
 const {
-<<<<<<< HEAD
-  cadastrarUsuario,
-  realizarLogin,
-  alterarCadastro,
-} = require("./controllers/usuarios.controller");
-const {addProduto, deletarProduto, alterarPrecoProduto, alterarQuantidadeProduto, listarProdutos} = require('./controllers/produtos.controller')
-const validarToken = require("./middlewares/validarToken");
-const router = express();
-
-
-router.post("/", realizarLogin);
-router.post("/signup/cadastro", cadastrarUsuario);
-
-router.use(validarToken)
-router.get("/produtos",listarProdutos);
-
-router.post("/produtos",addProduto);
-
-router.put("/usuarios/:id/editar",alterarCadastro);
-
-router.patch("/produtos/:id/preco",alterarPrecoProduto);
-router.patch("/produtos/:id/quantidade",alterarQuantidadeProduto);
-
-router.delete("/produtos/:id",deletarProduto);
-=======
   atualizarProduto,
   buscarProdutoPorId,
   cadastrarProduto,
   deletarProduto,
   listarProdutos,
+  listarDestaques,
   modificarPreco,
   modificarQuantidade,
 } = require("./controllers/produtos");
@@ -50,7 +26,10 @@ const {
   atualizarTransacaoID,
 } = require("./controllers/functions");
 const validarToken = require("./middlewares/validarToken");
-const { realizarLoginADM, cadastrarADM } = require("./controllers/adm.controller");
+const {
+  realizarLoginADM,
+  cadastrarADM,
+} = require("./controllers/adm.controller");
 const router = express();
 
 router.post("/usuario", cadastrarUsuario);
@@ -60,6 +39,7 @@ router.post("/login/admcontroller", realizarLoginADM);
 router.post("/adm/sign-up", cadastrarADM);
 
 router.get("/produtos", listarProdutos);
+router.get("/destaques", listarDestaques);
 router.get("/categorias", listarCategorias);
 
 router.use(validarToken);
@@ -67,7 +47,6 @@ router.use(validarToken);
 router.get("/usuario/", listarUsuarios);
 router.get("/usuario/:id", listarUsuario);
 router.put("/usuario/:id/editar", alterarCadastro);
-
 
 router.get("/transacoes", listarTransacoes);
 router.get("/transacao/extrato", listarExtrato);
@@ -93,7 +72,5 @@ router.delete("/produtos/:id", deletarProduto);
 router.patch("/produtos/:id/modificar-preco", modificarPreco);
 
 router.patch("/produtos/:id/modificar-quantidade", modificarQuantidade);
-
->>>>>>> f678ac9 (rotas adm, usuario e produtos prontas)
 
 module.exports = router;

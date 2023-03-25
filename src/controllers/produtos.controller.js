@@ -4,9 +4,10 @@ async function listarProdutos(req, res) {
   const produtos = await pool.query("select * from produtos");
 
   if (produtos.rows.length > 0) return res.json(produtos.rows);
-  
+
   return res.json("Nenhum produto cadastrado");
 }
+
 
 async function addProduto(req, res) {
   const { nome, categoria, preco, quantidade, medida } = req.body;
@@ -53,9 +54,15 @@ async function deletarProduto(req, res) {
 
   return res.json("Deletado");
 }
+async function listarDestaques(req, res) {
+  const {rows}= await pool.query("select * from destaques");
+console.log(rows)
+  if (rows.length > 0) return res.json(rows);
+}
 
 module.exports = {
   listarProdutos,
+  listarDestaques,
   addProduto,
   alterarPrecoProduto,
   alterarQuantidadeProduto,

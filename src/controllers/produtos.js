@@ -196,9 +196,17 @@ async function modificarQuantidade(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
-
+async function listarDestaques(req, res) {
+  try {
+    const { rows } = await pool.query("select * from destaques");
+    if (rows.length > 0) return res.json(rows);
+  } catch (error) {
+    res.status(500).json({error})
+  }
+}
 module.exports = {
   listarProdutos,
+  listarDestaques,
   buscarProdutoPorId,
   cadastrarProduto,
   atualizarProduto,

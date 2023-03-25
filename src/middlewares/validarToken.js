@@ -1,17 +1,9 @@
 const jwt = require("jsonwebtoken");
-<<<<<<< HEAD
-const senhaSegura = require('../controllers/senhaSegura')
-=======
 const senhaSegura = require("../controllers/senhaSegura");
->>>>>>> f678ac9 (rotas adm, usuario e produtos prontas)
 const pool = require("../service/instance");
 
 async function validarToken(req, res, next) {
   const { authorization } = req.headers;
-<<<<<<< HEAD
-=======
-
->>>>>>> f678ac9 (rotas adm, usuario e produtos prontas)
   try {
     const bearer = authorization.split(" ")[1];
 
@@ -23,11 +15,9 @@ async function validarToken(req, res, next) {
       [id]
     );
 
-<<<<<<< HEAD
     if (rowCount < 1)
       return res.status(401).json({ mensagem: "Não autorizado" });
 
-=======
     if (rowCount < 1) {
       const { rows, rowCount } = await pool.query(
         `select * from administradores where id = $1`,
@@ -36,7 +26,6 @@ async function validarToken(req, res, next) {
       if (rowCount < 1)
         return res.status(401).json({ mensagem: "Não autorizado" });
     }
->>>>>>> f678ac9 (rotas adm, usuario e produtos prontas)
     req.usuario = rows[0];
 
     next();
@@ -45,8 +34,4 @@ async function validarToken(req, res, next) {
   }
 }
 
-<<<<<<< HEAD
 module.exports = validarToken
-=======
-module.exports = validarToken;
->>>>>>> f678ac9 (rotas adm, usuario e produtos prontas)

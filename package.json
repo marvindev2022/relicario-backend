@@ -1,48 +1,30 @@
 {
-<<<<<<< HEAD
-  "name": "backend",
+  "name": "relicario-backend",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/index.js"
-=======
-  "name": "desafio-backend-03-dindin-t09",
-  "version": "1.0.0",
-  "description": "![](https://i.imgur.com/xG74tOh.png)",
-  "main": "index.js",
-  "scripts": {
-    "dev": "nodemon ./src/index.js"
+    "dev": "nodemon ./index"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/marvindev2022/desafio-backend-03-dindin-t09.git"
->>>>>>> f678ac9 (rotas adm, usuario e produtos prontas)
+    "url": "git+https://github.com/marvindev2022/relicario-backend.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-<<<<<<< HEAD
-  "dependencies": {
-    "axios": "^1.3.3",
-    "bcrypt": "^5.1.0",
-    "express": "^4.18.2",
-    "json-server": "^0.17.2",
-=======
   "bugs": {
-    "url": "https://github.com/marvindev2022/desafio-backend-03-dindin-t09/issues"
+    "url": "https://github.com/marvindev2022/relicario-backend/issues"
   },
-  "homepage": "https://github.com/marvindev2022/desafio-backend-03-dindin-t09#readme",
+  "homepage": "https://github.com/marvindev2022/relicario-backend#readme",
+  "description": "",
   "dependencies": {
-    "axios": "^1.3.4",
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
     "express": "^4.18.2",
->>>>>>> f678ac9 (rotas adm, usuario e produtos prontas)
     "jsonwebtoken": "^9.0.0",
-    "pg": "^8.9.0"
+    "pg": "^8.10.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.22"
   }
 }

@@ -4,33 +4,6 @@ const jwt = require("jsonwebtoken");
 const senhaSegura = require("./senhaSegura");
 
 async function cadastrarUsuario(req, res) {
-<<<<<<< HEAD
-  const { nome, email, endereco, senha } = req.body;
-
-  if ([nome, email, endereco, senha].includes("undefined"))
-    return res
-      .status(400)
-      .json({ mensagem: "Todos os campos devem ser preenchidos!" });
-  if (!email.includes("@"))
-    return res
-      .status(400)
-      .json({ mensagem: "Informe um email no formato valido" });
-  try {
-    const senhaCryptografada = await bcrypt.hash(senha, 10);
-    const params = [nome, email, endereco, senhaCryptografada];
-
-    await pool.query(
-      `INSERT INTO  usuarios (
-    nome,
-    email,
-    endereco,
-    senha
-    ) values ($1,$2,$3,$4)`,
-      params
-    );
-
-    return res.json({ mensagem: "Cadastro realizado com sucesso!" });
-=======
   const emailRegex = /^\S+@\S+\.\S+$/;
   const {
     nome,
@@ -118,7 +91,6 @@ async function cadastrarUsuario(req, res) {
       estado: usuario.estado,
       cep: usuario.cep,
     });
->>>>>>> f678ac9 (rotas adm, usuario e produtos prontas)
   } catch (error) {
     if (
       error.message ===
@@ -146,19 +118,12 @@ async function realizarLogin(req, res) {
 
     if (rowCount < 1 || !senhaValida)
       return res.status(400).json({ mensagem: "Email/Senha invalido!" });
-<<<<<<< HEAD
-=======
 
->>>>>>> f678ac9 (rotas adm, usuario e produtos prontas)
     const token = jwt.sign(
       { id: rows[0].id, nome: rows[0].nome },
       senhaSegura,
       {
-<<<<<<< HEAD
-        expiresIn: "1d",
-=======
         expiresIn: "30d",
->>>>>>> f678ac9 (rotas adm, usuario e produtos prontas)
       }
     );
 
@@ -171,27 +136,12 @@ async function realizarLogin(req, res) {
       )
     )
       return res.status(401).json({ mensagem: "Email/Senha invalido!" });
-<<<<<<< HEAD
-    return res.status(500).json({ mensagem: "Erro servidor" });
-=======
     return res.status(500).json(error.message);
->>>>>>> f678ac9 (rotas adm, usuario e produtos prontas)
   }
 }
 
 async function alterarCadastro(req, res) {
   const { id } = req.params;
-<<<<<<< HEAD
-  const { nome, email, endereco, senha } = req.body;
-  const senhaCryptografada = await bcrypt.hash(senha, 10);
-  const params = [nome, email, endereco, senhaCryptografada, id];
-  const update = await pool.query(
-    `UPDATE usuarios SET nome = $1 ,email = $2 ,endereco = $3, senha = $4 WHERE id = $5 RETURNING *;`,
-    params
-  );
-
-  res.json(update.rows);
-=======
   const {
     nome,
     email,
@@ -297,15 +247,11 @@ async function listarUsuarios(req, res) {
   } catch (error) {
     return res.status(500).json(error.message);
   }
->>>>>>> f678ac9 (rotas adm, usuario e produtos prontas)
 }
 module.exports = {
   cadastrarUsuario,
   realizarLogin,
   alterarCadastro,
-<<<<<<< HEAD
-=======
   listarUsuario,
   listarUsuarios,
->>>>>>> f678ac9 (rotas adm, usuario e produtos prontas)
 };
