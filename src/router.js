@@ -33,7 +33,7 @@ const {
 const router = express();
 
 router.get("/",(req,res)=>{
-  res.send("testendo heroku")
+  res.send("Testando o deploy heroku!")
 })
 router.post("/usuario", cadastrarUsuario);
 router.post("/login", realizarLogin);
