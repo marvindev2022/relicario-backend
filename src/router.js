@@ -32,6 +32,9 @@ const {
 } = require("./controllers/adm.controller");
 const router = express();
 
+router.get("/",()=>{
+  console.log("testendo heroku")
+})
 router.post("/usuario", cadastrarUsuario);
 router.post("/login", realizarLogin);
 
