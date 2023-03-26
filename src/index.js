@@ -1,8 +1,9 @@
 const express = require("express");
-const router = require("./router");
+const cors = require("cors");
+const router = require("./router.js");
 
 const app = express();
 
-app.use(express.json(), router);
+app.use(express.json(), cors(), router);
 
-app.listen(3500, () => console.log("porta 3500 online"));
+app.listen(4000);
