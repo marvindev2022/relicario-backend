@@ -231,7 +231,15 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
     const { id } = req.usuario;
     const { produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio } =
       req.body;
+const console = ![
+  produtoId,
+  quantidade,
+  valorTotal,
+  tipoEnvio,
+  custoEnvio,
+].every(Boolean);
 
+return res.json(console)
     if (
       ![produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio].every(Boolean)
     ) {
