@@ -1,8 +1,15 @@
 const pool = require("../service/instance");
 
 async function cadastrarProduto(req, res) {
-  const { nome, descricao, preco, subcategoria_id, categoria_id, quantidade,imagem } =
-    req.body;
+  const {
+    nome,
+    descricao,
+    preco,
+    subcategoria_id,
+    categoria_id,
+    quantidade,
+    imagem,
+  } = req.body;
 
   try {
     if (
@@ -26,7 +33,15 @@ async function cadastrarProduto(req, res) {
 
     const { rows: insertData } = await pool.query(
       `INSERT INTO produtos (nome, descricao, preco, subcategoria_id,categoria_id ,quantidade,imagem) VALUES ($1, $2, $3, $4,$5,$6,$7) RETURNING *;`,
-      [nome, descricao, preco, subcategoria_id, categoria_id, quantidade,imagem]
+      [
+        nome,
+        descricao,
+        preco,
+        subcategoria_id,
+        categoria_id,
+        quantidade,
+        imagem,
+      ]
     );
 
     return res.status(201).json({
@@ -37,7 +52,7 @@ async function cadastrarProduto(req, res) {
       subcategoria_id: insertData[0].subcategoria_id,
       categoria_id: insertData[0].categoria_id,
       quantidade: insertData[0].quantidade,
-      imagem: insertData[0].imagem
+      imagem: insertData[0].imagem,
     });
   } catch (error) {
     res.status(500).json(error.message);
@@ -46,8 +61,15 @@ async function cadastrarProduto(req, res) {
 
 async function atualizarProduto(req, res) {
   const { id } = req.params;
-  const { nome, descricao, preco, subcategoria_id, categoria_id, quantidade,imagem } =
-    req.body;
+  const {
+    nome,
+    descricao,
+    preco,
+    subcategoria_id,
+    categoria_id,
+    quantidade,
+    imagem,
+  } = req.body;
 
   try {
     if (
@@ -99,7 +121,6 @@ async function atualizarProduto(req, res) {
     res.status(500).json({ mensagem: error.message });
   }
 }
-
 
 async function deletarProduto(req, res) {
   const { id } = req.params;
@@ -201,7 +222,7 @@ async function listarDestaques(req, res) {
     const { rows } = await pool.query("select * from destaques");
     if (rows.length > 0) return res.json(rows);
   } catch (error) {
-    res.status(500).json({error})
+    res.status(500).json({ error });
   }
 }
 
@@ -219,7 +240,12 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
   try {
     const { rows } = await pool.query(
       `INSERT INTO carrinho (usuario_id,produto_id,quantidade,custo_total,tipo_envio,custo_envio) VALUES($1,$2,$3,$4,$5,$6,) returning *`,
-      id
+      [id,
+      produto_id,
+      quantidade,
+      custo_total,
+      tipo_envio,
+      custo_envio]
     );
 
     return res.status(200).json(rows);
