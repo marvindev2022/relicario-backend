@@ -227,63 +227,57 @@ async function listarDestaques(req, res) {
 }
 
 async function adicionarAoCarrinhoDeCompras(req, res) {
-  const { id } = req.usuario;
-
-  const { produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio } = req.body;
-
-  if (
-    produtoId === "" ||
-    quantidade === "" ||
-    valorTotal === "" ||
-    tipoEnvio === "" ||
-    custoEnvio === ""
-  ) {
-    return res
-      .status(401)
-      .json({ produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio });
-  }
   try {
-    const productExisty = await pool.query(
-      `SELECT * FROM transacoes WHERE usuario_id = $1 and produto_id = $2`,
+    const { id } = req.usuario;
+    const { produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio } =
+      req.body;
+
+    if (
+      ![produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio].every(Boolean)
+    ) {
+      return res
+        .status(401)
+        .json({ mensagem: "Preencha todos os campos obrigatórios." });
+    }
+
+    const { rows } = await pool.query(
+      `SELECT * FROM transacoes WHERE usuario_id = $1 AND produto_id = $2`,
       [id, produtoId]
     );
-    if (productExisty.rows[0]) {
-      const newQuantity =
-        parseFloat(productExisty.rows[0].quantidade) + quantidade;
-      const newPrice =
-        parseFloat(productExisty.rows[0].valor_total) * newQuantity;
-      const params = [newQuantity, newPrice, produtoId];
-      const { rows } = await pool.query(
-        `UPDATE transacoes
-        SET quantidade = $1, valor_total = $2
-        WHERE produto_id = $3 RETURNING * ;
-        `,
-        params
+
+    if (rows.length) {
+      const { quantidade: existingQuantity, valor_total: existingPrice } =
+        rows[0];
+      const newQuantity = parseFloat(existingQuantity) + quantidade;
+      const newPrice = parseFloat(existingPrice) * newQuantity;
+
+      const { rows: updatedRows } = await pool.query(
+        `UPDATE transacoes SET quantidade = $1, valor_total = $2 WHERE produto_id = $3 RETURNING *`,
+        [newQuantity, newPrice, produtoId]
       );
 
-      return res.status(200).json(rows[0]);
+      return res.status(200).json(updatedRows[0]);
     } else {
-      const { rows } = await pool.query(
-        `INSERT INTO transacoes (usuario_id,
-          produto_id,
-          quantidade,
-          valor_total,
-          custo_envio,
-          tipo_envio
-          )VALUES ($1,$2,$3,$4,$5,$6) RETURNING *;`,
+      const { rows: insertedRows } = await pool.query(
+        `INSERT INTO transacoes (usuario_id, produto_id, quantidade, valor_total, custo_envio, tipo_envio)
+        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
         [id, produtoId, quantidade, valorTotal, custoEnvio, tipoEnvio]
       );
 
-      return res.status(200).json(rows);
+      return res.status(200).json(insertedRows[0]);
     }
   } catch (error) {
-    res.status(500).json({ mensagem: error.message });
+    console.error(error);
+    return res
+      .status(500)
+      .json({ mensagem: "Ocorreu um erro interno no servidor." });
   }
 }
-async function listarCarrinhoDeCompras(req, res) {
-  const { id } = req.usuario;
 
+async function listarCarrinhoDeCompras(req, res) {
   try {
+    const { id } = req.usuario;
+
     const { rows } = await pool.query(
       `SELECT * FROM transacoes WHERE usuario_id = $1`,
       [id]
@@ -291,7 +285,10 @@ async function listarCarrinhoDeCompras(req, res) {
 
     return res.status(200).json(rows);
   } catch (error) {
-    res.status(500).json(error.message);
+    console.error(error);
+    return res
+      .status(500)
+      .json({ mensagem: "Ocorreu um erro interno no servidor." });
   }
 }
 
