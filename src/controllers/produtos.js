@@ -227,7 +227,8 @@ async function listarDestaques(req, res) {
 }
 
 async function adicionarAoCarrinhoDeCompras(req, res) {
-  const { id } = req.usuarios
+  const teste = req.usuarios
+  return res.json(teste)
   const { produto_id, quantidade, custo_total, tipo_envio, custo_envio } =
     req.body;
 
