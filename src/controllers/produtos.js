@@ -248,7 +248,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
       [id, produtoId]
     );
     if (productExisty.rows[0]) {
-      const params = [productExisty.quantidade + quantidade, produtoId];
+      const params = [parseFloat(productExisty.rows[0].quantidade) + quantidade, produtoId];
       const { rows } = await pool.query(
         `UPDATE transacoes
         SET quantidade = $1
