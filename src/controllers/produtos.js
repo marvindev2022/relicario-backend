@@ -238,7 +238,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
     ) {
       return res
         .status(401)
-        .json({ mensagem: "Preencha todos os campos obrigatórios." });
+        .json([produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio]);
     }
 
     const { rows } = await pool.query(
@@ -249,7 +249,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
     if (rows.length) {
       const { quantidade: existingQuantity, valor_total: existingPrice } =
         rows[0];
-        
+
       const newQuantity = parseFloat(existingQuantity) + quantidade;
       const newPrice = parseFloat(existingPrice) * newQuantity;
 
