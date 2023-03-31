@@ -255,8 +255,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
       const params = [newQuantity, newPrice, produtoId];
       const { rows } = await pool.query(
         `UPDATE transacoes
-        SET quantidade = $1
-        SET valor_total = $2
+        SET quantidade = $1, valor_total = $2
         WHERE produto_id = $3 RETURNING * ;
         `,
         params
