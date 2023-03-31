@@ -231,20 +231,19 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
 
   const { produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio } = req.body;
 
+  if (produtoId ==="" || quantidade ==="" || valorTotal ==="" || tipoEnvio ==="" || custoEnvio ==="") {
+    return res
+      .status(401)
+      .json({ produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio });
+  }
   try {
-    if (!produtoId || !quantidade || !valorTotal || !tipoEnvio || !custoEnvio) {
-      return res
-        .status(401)
-        .json({ produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio });
-    } else {
-      const { rows } = await pool.query(
-        `INSERT INTO transacoes (usuario_id,produto_id,quantidade,valor_total,custo_envio,tipo_envio)
+    const { rows } = await pool.query(
+      `INSERT INTO transacoes (usuario_id,produto_id,quantidade,valor_total,custo_envio,tipo_envio)
        VALUES($1,$2,$3,$4,$5,$6) RETURNING *`,
-        [id, produtoId, quantidade, valorTotal, custoEnvio, tipoEnvio]
-      );
+      [id, produtoId, quantidade, valorTotal, custoEnvio, tipoEnvio]
+    );
 
-      return res.status(200).json(rows);
-    }
+    return res.status(200).json(rows);
   } catch (error) {
     res.status(500).json({ mensagem: error.message });
   }
