@@ -227,7 +227,7 @@ async function listarDestaques(req, res) {
 }
 
 async function adicionarAoCarrinhoDeCompras(req, res) {
-  const { id } = req.usuarios.rows[0];
+  const { id } = req.usuarios
   const { produto_id, quantidade, custo_total, tipo_envio, custo_envio } =
     req.body;
 
@@ -238,7 +238,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
   )
     return;
   try {
-    const { rows } = await pool.query(
+    const data = await pool.query(
       `INSERT INTO carrinho (usuario_id,produto_id,quantidade,custo_total,tipo_envio,custo_envio) VALUES($1,$2,$3,$4,$5,$6,) returning *`,
       [id,
       produto_id,
@@ -248,7 +248,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
       custo_envio]
     );
 
-    return res.status(200).json(rows);
+    return res.status(200).json(data);
   } catch (error) {
     res.status(500).json(error.message);
   }
