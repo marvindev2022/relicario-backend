@@ -234,7 +234,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
 
 
     if (
-      [produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio].every(Boolean)
+      ![produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio].every(Boolean)
     ) {
       return res
         .status(401)
