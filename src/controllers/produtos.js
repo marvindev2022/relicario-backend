@@ -247,13 +247,15 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
       `SELECT * FROM transacoes WHERE usuario_id = $1 and produto_id = $2`,
       [id, produtoId]
     );
-    const params = [productExisty.quantidade + quantidade, produtoId];
     if (productExisty.rows[0]) {
-      await pool.query(`UPDATE transacoes
+      const params = [productExisty.quantidade + quantidade, produtoId];
+      const { rows } = await pool.query(
+        `UPDATE transacoes
         SET quantidade = $1
-        WHERE produto_id = $2;
-        `),
-        params;
+        WHERE produto_id = $2 RETURNING;
+        `,
+        params
+      );
 
       return res.status(200).json(productExisty.rows[0]);
     } else {
