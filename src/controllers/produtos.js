@@ -229,17 +229,24 @@ async function listarDestaques(req, res) {
 async function adicionarAoCarrinhoDeCompras(req, res) {
   const { id } = req.usuario;
 
-  const { produto_id, quantidade, valor_total, tipo_envio, custo_envio } =
+  const { produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio } =
     req.body;
 
-  if (!produto_id || !quantidade || !valor_total || !tipo_envio || !custo_envio)
+  if (
+    !produtoId ||
+    !quantidade ||
+    !valorTotal ||
+    !tipoEnvio ||
+    !custoEnvio
+  ) {
     return res
-      .status(433)
-      .json({ produto_id, quantidade, valor_total, tipo_envio, custo_envio });
+      .status(401)
+      .json({ produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio });
+  }
   try {
     const { rows } = await pool.query(
-      `INSERT INTO carrinho (usuario_id, produto_id,quantidade,valor_total,custo_envio,tipo_envio) VALUES($1,$2,$3,$4,$5,$6,) RETURNING *`,
-      [id, produto_id, quantidade, valor_total, custo_envio, tipo_envio]
+      `INSERT INTO transacoes (usuario_id, produto_id,quantidade,valor_total,custo_envio,tipo_envio) VALUES($1,$2,$3,$4,$5,$6,) RETURNING *`,
+      [id, produtoId, quantidade, valorTotal, custoEnvio, tipoEnvio]
     );
 
     return res.status(200).json(rows);
@@ -252,7 +259,7 @@ async function listarCarrinhoDeCompras(req, res) {
 
   try {
     const { rows } = await pool.query(
-      `SELECT * from carrinho WHERE usuario_id = $1`,
+      `SELECT * from transacoes WHERE usuario_id = $1`,
       id
     );
 
