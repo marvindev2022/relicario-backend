@@ -34,9 +34,7 @@ const {
 } = require("./controllers/adm.controller");
 const router = express();
 
-router.get("/", (req, res) => {
-  res.send("Bem vindo a minha primeira api onlinecd !");
-});
+
 router.post("/usuario", cadastrarUsuario);
 router.post("/login", realizarLogin);
 
