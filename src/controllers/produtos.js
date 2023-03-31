@@ -239,7 +239,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
   try {
     const { rows } = await pool.query(
       `INSERT INTO transacoes (usuario_id,produto_id,quantidade,valor_total,custo_envio,tipo_envio)
-       VALUES($1,$2,$3,$4,$5,$6,) RETURNING *`,
+       VALUES($1,$2,$3,$4,$5,$6) RETURNING *`,
       [id, produtoId, quantidade, valorTotal, custoEnvio, tipoEnvio]
     );
 
