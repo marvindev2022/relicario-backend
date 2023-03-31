@@ -234,7 +234,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
 
   if (!produto_id || !quantidade || !valor_total || !tipo_envio || !custo_envio)
     return res
-      .status(401)
+      .status(433)
       .json({ produto_id, quantidade, valor_total, tipo_envio, custo_envio });
   try {
     const { rows } = await pool.query(
