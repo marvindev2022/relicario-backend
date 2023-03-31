@@ -233,7 +233,9 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
     req.body;
 
   if (!produto_id || !quantidade || !valor_total || !tipo_envio || !custo_envio)
-    return res.status(401).json("Preencha todos os campos");
+    return res
+      .status(401)
+      .json({ produto_id, quantidade, valor_total, tipo_envio, custo_envio });
   try {
     const { rows } = await pool.query(
       `INSERT INTO carrinho (usuario_id, produto_id,quantidade,valor_total,custo_envio,tipo_envio) VALUES($1,$2,$3,$4,$5,$6,) RETURNING *`,
