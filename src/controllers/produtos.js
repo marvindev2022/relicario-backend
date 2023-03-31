@@ -266,7 +266,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
           valor_total,
           custo_envio,
           tipo_envio
-          )VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
+          )VALUES ($1,$2,$3,$4,$5,$6) RETURNING *;`,
         [id, produtoId, quantidade, valorTotal, custoEnvio, tipoEnvio]
       );
 
