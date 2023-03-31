@@ -228,20 +228,20 @@ async function listarDestaques(req, res) {
 
 async function adicionarAoCarrinhoDeCompras(req, res) {
   const { id } = req.usuario;
- return res.json(req.usuario)
-  const { produto_id, quantidade, custo_total, tipo_envio, custo_envio } =
+  
+  const { produto_id, quantidade, valor_total, tipo_envio, custo_envio } =
     req.body;
 
   if (
-    [produto_id, quantidade, custo_total, tipo_envio, custo_envio].includes(
+    [produto_id, quantidade, valor_total, tipo_envio, custo_envio].includes(
       undefined
     )
   )
     return res.status(401).json("Preencha todos os campos")
   try {
-    const {rows} = await pool.query(
-      `INSERT INTO carrinho (usuario_id,produto_id,quantidade,custo_total,tipo_envio,custo_envio) VALUES($1,$2,$3,$4,$5,$6,) RETURNING *`,
-      [id, produto_id, quantidade, custo_total, tipo_envio, custo_envio]
+    const { rows } = await pool.query(
+      `INSERT INTO carrinho (usuario_id,produto_id,quantidade,valor_total,custo_envio,tipo_envio) VALUES($1,$2,$3,$4,$5,$6,) RETURNING *`,
+      [id, produto_id, quantidade, valor_total,custo_envio, tipo_envio]
     );
 
     return res.status(200).json(rows);
