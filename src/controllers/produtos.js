@@ -255,7 +255,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
   }
 }
 async function listarCarrinhoDeCompras(req, res) {
-  const { id } = req.usuarios;
+  const { id } = req.usuario;
 
   try {
     const { rows } = await pool.query(
