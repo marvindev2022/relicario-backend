@@ -204,10 +204,49 @@ async function listarDestaques(req, res) {
     res.status(500).json({error})
   }
 }
+
+async function adicionarAoCarrinhoDeCompras(req, res) {
+  const { id } = req.usuarios.rows[0];
+  const { produto_id, quantidade, custo_total, tipo_envio, custo_envio } =
+    req.body;
+
+  if (
+    [produto_id, quantidade, custo_total, tipo_envio, custo_envio].includes(
+      undefined
+    )
+  )
+    return;
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO carrinho (usuario_id,produto_id,quantidade,custo_total,tipo_envio,custo_envio) VALUES($1,$2,$3,$4,$5,$6,) returning *`,
+      id
+    );
+
+    return res.status(200).json(rows);
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
+}
+async function listarCarrinhoDeCompras(req, res) {
+  const { id } = req.usuarios.rows[0];
+
+  try {
+    const { rows } = await pool.query(
+      `SELECT * from carrinho WHERE usuario_id = $1`,
+      id
+    );
+
+    return res.status(200).json(rows);
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
+}
 module.exports = {
   listarProdutos,
   listarDestaques,
   buscarProdutoPorId,
+  adicionarAoCarrinhoDeCompras,
+  listarCarrinhoDeCompras,
   cadastrarProduto,
   atualizarProduto,
   deletarProduto,

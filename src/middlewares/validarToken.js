@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const senhaSegura = require("../controllers/senhaSegura");
+const senhaSegura = require("../security/senhaSegura");
 const pool = require("../service/instance");
 
 async function validarToken(req, res, next) {

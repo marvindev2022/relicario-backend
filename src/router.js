@@ -8,6 +8,8 @@ const {
   listarDestaques,
   modificarPreco,
   modificarQuantidade,
+  listarCarrinhoDeCompras,
+  adicionarAoCarrinhoDeCompras,
 } = require("./controllers/produtos");
 const {
   alterarCadastro,
@@ -30,7 +32,6 @@ const {
   realizarLoginADM,
   cadastrarADM,
 } = require("./controllers/adm.controller");
-const { adicionarAoCarrinhoDeCompras, listarCarrinhoDeCompras } = require("./controllers/produtos.controller");
 const router = express();
 
 router.get("/", (req, res) => {
