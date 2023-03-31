@@ -1,7 +1,7 @@
 const pool = require("../service/instance");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const senhaSegura = require("./senhaSegura");
+const senhaSegura = require("../security/senhaSegura");
 
 async function cadastrarUsuario(req, res) {
   const emailRegex = /^\S+@\S+\.\S+$/;

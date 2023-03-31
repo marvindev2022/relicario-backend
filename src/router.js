@@ -30,11 +30,12 @@ const {
   realizarLoginADM,
   cadastrarADM,
 } = require("./controllers/adm.controller");
+const { adicionarAoCarrinhoDeCompras, listarCarrinhoDeCompras } = require("./controllers/produtos.controller");
 const router = express();
 
-router.get("/",(req,res)=>{
-  res.send("Testando o deploy heroku!")
-})
+router.get("/", (req, res) => {
+  res.send("Bem vindo a minha primeira api onlinecd !");
+});
 router.post("/usuario", cadastrarUsuario);
 router.post("/login", realizarLogin);
 
@@ -58,22 +59,15 @@ router.post("/transacao", cadastrarTransacao);
 router.put("/transacao/:id", atualizarTransacaoID);
 router.delete("/transacao/:id", deletarTransacaoID);
 
-// Rota para cadastrar um novo produto
+/*ADM*/
 router.post("/produtos", cadastrarProduto);
-
-// Rota para listar todos os produtos
-
-// Rota para obter informações de um produto específico
 router.get("/produtos/:id", buscarProdutoPorId);
-
-// Rota para atualizar as informações de um produto
 router.put("/produtos/:id", atualizarProduto);
-
-// Rota para excluir um produto
 router.delete("/produtos/:id", deletarProduto);
-
 router.patch("/produtos/:id/modificar-preco", modificarPreco);
-
 router.patch("/produtos/:id/modificar-quantidade", modificarQuantidade);
+
+router.post("/carrinho",adicionarAoCarrinhoDeCompras)
+router.get("/carrinho",listarCarrinhoDeCompras)
 
 module.exports = router;
