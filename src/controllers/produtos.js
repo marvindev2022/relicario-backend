@@ -249,6 +249,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
     if (rows.length) {
       const { quantidade: existingQuantity, valor_total: existingPrice } =
         rows[0];
+        
       const newQuantity = parseFloat(existingQuantity) + quantidade;
       const newPrice = parseFloat(existingPrice) * newQuantity;
 
