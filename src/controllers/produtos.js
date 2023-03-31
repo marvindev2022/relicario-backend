@@ -268,6 +268,7 @@ async function listarCarrinhoDeCompras(req, res) {
     res.status(500).json(error.message);
   }
 }
+
 module.exports = {
   listarProdutos,
   listarDestaques,
