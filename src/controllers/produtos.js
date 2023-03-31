@@ -251,7 +251,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
     if (productExisty) {
       await pool.query(`UPDATE transacoes
         SET quantidade = $1
-        WHERE id_produto = $2;
+        WHERE produto_id = $2;
         `);
     } else {
       const { rows } = await pool.query(
