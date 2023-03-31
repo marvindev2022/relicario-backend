@@ -260,7 +260,7 @@ async function listarCarrinhoDeCompras(req, res) {
   try {
     const { rows } = await pool.query(
       `SELECT * FROM transacoes WHERE usuario_id = $1`,
-      id
+      [id]
     );
 
     return res.status(200).json(rows);
