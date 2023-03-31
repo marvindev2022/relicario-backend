@@ -231,7 +231,13 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
 
   const { produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio } = req.body;
 
-  if (produtoId ==="" || quantidade ==="" || valorTotal ==="" || tipoEnvio ==="" || custoEnvio ==="") {
+  if (
+    produtoId === "" ||
+    quantidade === "" ||
+    valorTotal === "" ||
+    tipoEnvio === "" ||
+    custoEnvio === ""
+  ) {
     return res
       .status(401)
       .json({ produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio });
@@ -253,7 +259,7 @@ async function listarCarrinhoDeCompras(req, res) {
 
   try {
     const { rows } = await pool.query(
-      `SELECT * from transacoes WHERE usuario_id = $1`,
+      `SELECT * FROM transacoes WHERE usuario_id = $1`,
       id
     );
 
