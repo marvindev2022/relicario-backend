@@ -243,13 +243,30 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
       .json({ produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio });
   }
   try {
-    const { rows } = await pool.query(
-      `INSERT INTO transacoes (usuario_id,produto_id,quantidade,valor_total,custo_envio,tipo_envio)
-       VALUES($1,$2,$3,$4,$5,$6) RETURNING *`,
-      [id, produtoId, quantidade, valorTotal, custoEnvio, tipoEnvio]
+    const productExisty = await pool.query(
+      `SELECT * FROM transacoes WHERE usuario_id = $1 and produto_id = $2`,
+      [id, produtoId]
     );
 
-    return res.status(200).json(rows);
+    if (productExisty) {
+      await pool.query(`UPDATE transacoes
+        SET quantidade = $1
+        WHERE id_produto = $2;
+        `);
+    } else {
+      const { rows } = await pool.query(
+        `INSERT INTO transacoes (usuario_id,
+          produto_id,
+          quantidade,
+          valor_total,
+          custo_envio,
+          tipo_envio
+          )VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
+        [id, produtoId, quantidade, valorTotal, custoEnvio, tipoEnvio]
+      );
+
+      return res.status(200).json(rows);
+    }
   } catch (error) {
     res.status(500).json({ mensagem: error.message });
   }
