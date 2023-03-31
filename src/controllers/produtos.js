@@ -257,7 +257,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
         params
       );
 
-      return res.status(200).json(productExisty.rows[0]);
+      return res.status(200).json(rows[0]);
     } else {
       const { rows } = await pool.query(
         `INSERT INTO transacoes (usuario_id,
