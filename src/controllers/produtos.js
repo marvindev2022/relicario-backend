@@ -234,11 +234,11 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
 
 
     if (
-      ![produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio].every(Boolean)
+      ![produtoId, quantidade, valorTotal, tipoEnvio,].every(Boolean)
     ) {
       return res
         .status(401)
-        .json([produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio]);
+        .json({mensagem:"Preencha todos os campos!"});
     }
 
     const { rows } = await pool.query(
@@ -263,7 +263,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
       const { rows: insertedRows } = await pool.query(
         `INSERT INTO transacoes (usuario_id, produto_id, quantidade, valor_total, custo_envio, tipo_envio)
         VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-        [id, produtoId, quantidade, valorTotal, custoEnvio, tipoEnvio]
+        [id, produtoId, quantidade, valorTotal, custoEnvio ?? 0, tipoEnvio]
       );
 
       return res.status(200).json(insertedRows[0]);
