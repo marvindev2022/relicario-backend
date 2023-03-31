@@ -245,7 +245,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
 
     return res.status(200).json(rows);
   } catch (error) {
-    res.status(500).json(error.message);
+    res.status(500).json({mensagem:error.message});
   }
 }
 async function listarCarrinhoDeCompras(req, res) {
