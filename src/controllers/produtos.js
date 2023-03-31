@@ -258,7 +258,14 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
       const { rows: insertedRows } = await pool.query(
         `INSERT INTO transacoes (usuario_id, produto_id, quantidade, valor_total, custo_envio, tipo_envio)
         VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-        [id, produtoId, newPrice, valorTotal, custoEnvio ?? 0, tipoEnvio]
+        [
+          id,
+          produtoId,
+          quantidade,
+          valorTotal * quantidade,
+          custoEnvio ?? 0,
+          tipoEnvio,
+        ]
       );
 
       return res.status(200).json(insertedRows[0]);
