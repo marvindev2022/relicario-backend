@@ -262,7 +262,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
           id,
           produtoId,
           quantidade,
-          valorTotal * quantidade,
+          valorTotal,
           custoEnvio ?? 0,
           tipoEnvio,
         ]
