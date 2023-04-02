@@ -145,9 +145,10 @@ async function listarProdutos(req, res) {
   try {
     const { rows } = await pool.query(
       `SELECT p.*, s.descricao as subcategoria_nome, c.descricao as categoria_nome
-FROM produtos p 
+FROM produtos p
 JOIN subcategorias s ON p.subcategoria_id = s.id
-JOIN categorias c ON s.categoria_id = c.id;
+JOIN categorias c ON p.categoria_id = c.id;
+
 `
     );
     res.json(rows);
@@ -229,10 +230,17 @@ async function listarDestaques(req, res) {
 async function adicionarAoCarrinhoDeCompras(req, res) {
   try {
     const { id } = req.usuario;
-    const {nome,imagem, produtoId, quantidade, valorTotal, tipoEnvio, custoEnvio } =
-      req.body;
+    const {
+      nome,
+      imagem,
+      produtoId,
+      quantidade,
+      valorTotal,
+      tipoEnvio,
+      custoEnvio,
+    } = req.body;
 
-    if (![produtoId, quantidade, valorTotal, tipoEnvio].every(Boolean)) {
+    if (![nome,imagem,produtoId, quantidade, valorTotal, tipoEnvio].every(Boolean)) {
       return res.status(401).json({ mensagem: "Preencha todos os campos!" });
     }
 
@@ -246,7 +254,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
         rows[0];
 
       const newQuantity = parseFloat(existingQuantity) + quantidade;
-      const newPrice = parseFloat(existingPrice) ;
+      const newPrice = parseFloat(existingPrice);
 
       const { rows: updatedRows } = await pool.query(
         `UPDATE transacoes SET quantidade = $1, valor_total = $2 WHERE produto_id = $3 RETURNING *`,
@@ -258,7 +266,16 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
       const { rows: insertedRows } = await pool.query(
         `INSERT INTO transacoes (usuario_id,nome,imagem, produto_id, quantidade, valor_total, custo_envio, tipo_envio)
         VALUES ($1, $2, $3, $4, $5, $6,$7,$8) RETURNING *`,
-        [id,nome,imagem, produtoId, quantidade, valorTotal, custoEnvio ?? 0, tipoEnvio]
+        [
+          id,
+          nome,
+          imagem,
+          produtoId,
+          quantidade,
+          valorTotal,
+          custoEnvio ?? 0,
+          tipoEnvio,
+        ]
       );
 
       return res.status(200).json(insertedRows[0]);
