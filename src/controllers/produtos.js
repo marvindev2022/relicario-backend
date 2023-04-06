@@ -240,7 +240,11 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
       custoEnvio,
     } = req.body;
 
-    if (![nome,imagem,produtoId, quantidade, valorTotal, tipoEnvio].every(Boolean)) {
+    if (
+      ![nome, imagem, produtoId, quantidade, valorTotal, tipoEnvio].every(
+        Boolean
+      )
+    ) {
       return res.status(401).json({ mensagem: "Preencha todos os campos!" });
     }
 
@@ -296,23 +300,20 @@ async function listarCarrinhoDeCompras(req, res) {
       `SELECT * FROM transacoes WHERE usuario_id = $1`,
       [id]
     );
-    
+
     return res.status(200).json(rows);
   } catch (error) {
     console.error(error);
     return res
-    .status(500)
-    .json({ mensagem: "Ocorreu um erro interno no servidor." });
+      .status(500)
+      .json({ mensagem: "Ocorreu um erro interno no servidor." });
   }
 }
 
-async function deletarProdutoCarrinho(req,res){
-  
-  
- await pool.query(
+async function deletarProdutoCarrinho(req, res) {
+  await pool.query(
     `DELETE FROM transação WHERE quantidade = 0;
-`,
-    [id]
+`
   );
 }
 
