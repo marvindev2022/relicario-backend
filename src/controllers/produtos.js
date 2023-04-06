@@ -311,10 +311,14 @@ async function listarCarrinhoDeCompras(req, res) {
 }
 
 async function deletarProdutoCarrinho(req, res) {
-  await pool.query(
-    `DELETE FROM transação WHERE quantidade = 0;
+  try {
+    await pool.query(
+      `DELETE FROM transação WHERE quantidade = 0;
 `
-  );
+    );
+  } catch (error) {
+    res.status(500).json(error)
+  }
 }
 
 module.exports = {
