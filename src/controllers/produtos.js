@@ -316,6 +316,7 @@ async function deletarProdutoCarrinho(req, res) {
       `DELETE FROM transacoes WHERE quantidade = 0;
 `
     );
+    res.json("ok")
   } catch (error) {
     res.status(500).json(error)
   }
