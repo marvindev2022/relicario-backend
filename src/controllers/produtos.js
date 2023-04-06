@@ -313,7 +313,7 @@ async function listarCarrinhoDeCompras(req, res) {
 async function deletarProdutoCarrinho(req, res) {
   try {
     await pool.query(
-      `DELETE FROM transacoes WHERE quantidade = 0;
+      `DELETE FROM transacoes WHERE quantidade < 1;
 `
     );
     res.json("ok")
