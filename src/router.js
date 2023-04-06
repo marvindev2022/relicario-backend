@@ -10,6 +10,7 @@ const {
   modificarQuantidade,
   listarCarrinhoDeCompras,
   adicionarAoCarrinhoDeCompras,
+  deletarProdutoCarrinho,
 } = require("./controllers/produtos");
 const {
   alterarCadastro,
@@ -67,6 +68,7 @@ router.patch("/produtos/:id/modificar-preco", modificarPreco);
 router.patch("/produtos/:id/modificar-quantidade", modificarQuantidade);
 
 router.post("/carrinho",adicionarAoCarrinhoDeCompras)
+router.delete("/carrinho", deletarProdutoCarrinho);
 router.get("/carrinho",listarCarrinhoDeCompras)
 
 module.exports = router;

@@ -296,14 +296,24 @@ async function listarCarrinhoDeCompras(req, res) {
       `SELECT * FROM transacoes WHERE usuario_id = $1`,
       [id]
     );
-
+    
     return res.status(200).json(rows);
   } catch (error) {
     console.error(error);
     return res
-      .status(500)
-      .json({ mensagem: "Ocorreu um erro interno no servidor." });
+    .status(500)
+    .json({ mensagem: "Ocorreu um erro interno no servidor." });
   }
+}
+
+async function deletarProdutoCarrinho(req,res){
+  
+  
+ await pool.query(
+    `DELETE FROM transação WHERE quantidade = 0;
+`,
+    [id]
+  );
 }
 
 module.exports = {
@@ -311,6 +321,7 @@ module.exports = {
   listarDestaques,
   buscarProdutoPorId,
   adicionarAoCarrinhoDeCompras,
+  deletarProdutoCarrinho,
   listarCarrinhoDeCompras,
   cadastrarProduto,
   atualizarProduto,
