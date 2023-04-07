@@ -8,10 +8,12 @@ const {
   listarDestaques,
   modificarPreco,
   modificarQuantidade,
+} = require("./controllers/produtos");
+const {
   listarCarrinhoDeCompras,
   adicionarAoCarrinhoDeCompras,
   deletarProdutoCarrinho,
-} = require("./controllers/produtos");
+} = require("./controllers/carrinhoDeCompras.js");
 const {
   alterarCadastro,
   cadastrarUsuario,
@@ -34,7 +36,6 @@ const {
   cadastrarADM,
 } = require("./controllers/adm.controller");
 const router = express();
-
 
 router.post("/usuario", cadastrarUsuario);
 router.post("/login", realizarLogin);
@@ -67,8 +68,8 @@ router.delete("/produtos/:id", deletarProduto);
 router.patch("/produtos/:id/modificar-preco", modificarPreco);
 router.patch("/produtos/:id/modificar-quantidade", modificarQuantidade);
 
-router.post("/carrinho",adicionarAoCarrinhoDeCompras)
+router.post("/carrinho", adicionarAoCarrinhoDeCompras);
 router.delete("/carrinho", deletarProdutoCarrinho);
-router.get("/carrinho",listarCarrinhoDeCompras)
+router.get("/carrinho", listarCarrinhoDeCompras);
 
 module.exports = router;

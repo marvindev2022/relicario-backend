@@ -223,22 +223,6 @@ async function alterarCadastro(req, res) {
   }
 }
 
-async function listarUsuario(req, res) {
-  const { id } = req.usuario;
-
-  try {
-    await pool.query(`SELECT * FROM usuarios WHERE id = $1;`, [id]);
-
-    return res.json({
-      id: req.usuario.id,
-      nome: req.usuario.nome,
-      email: req.usuario.email,
-    });
-  } catch (error) {
-    return res.status(500).json(error.message);
-  }
-}
-
 async function listarUsuarios(req, res) {
   try {
     const usuarios = await pool.query(`SELECT * FROM usuarios`);
@@ -248,6 +232,20 @@ async function listarUsuarios(req, res) {
     return res.status(500).json(error.message);
   }
 }
+async function listarUsuario(req, res) {
+  const { id } = req.usuario;
+
+  try {
+    const usuarios = await pool.query(`SELECT * FROM usuarios WHERE id = $1;`, [
+      id,
+    ]);
+
+    return res.json(usuarios.rows);
+  } catch (error) {
+    return res.status(500).json(error.message);
+  }
+}
+
 module.exports = {
   cadastrarUsuario,
   realizarLogin,
