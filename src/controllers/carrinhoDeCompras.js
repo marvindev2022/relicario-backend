@@ -1,3 +1,5 @@
+const pool = require("../service/instance");
+
 async function adicionarAoCarrinhoDeCompras(req, res) {
   try {
     const { id } = req.usuario;
@@ -12,7 +14,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
     } = req.body;
 
     if (
-      ![nome, imagem, produtoId, quantidade, valorTotal, tipoEnvio].every(
+      [nome, imagem, produtoId, quantidade, valorTotal, tipoEnvio].every(
         Boolean
       )
     ) {
