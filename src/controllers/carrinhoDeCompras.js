@@ -12,7 +12,7 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
       tipoEnvio,
       custoEnvio,
     } = req.body;
-    
+
     if (
       !nome ||
       !imagem ||

@@ -1,6 +1,5 @@
-const jwt = require("jsonwebtoken");
 require("dotenv").config();
-
+const jwt = require("jsonwebtoken");
 const pool = require("../service/instance");
 const jwtSecret = process.env.JWT_SECRET;
 
@@ -10,7 +9,6 @@ async function validarToken(req, res, next) {
     const bearer = authorization.split(" ")[1];
 
     if (!authorization) return res.status(400).json({ mensagem: "Faça login" });
-
     const { id } = jwt.verify(bearer, jwtSecret);
     const { rows, rowCount } = await pool.query(
       `select * from usuarios where id = $1`,
@@ -32,7 +30,7 @@ async function validarToken(req, res, next) {
 
     next();
   } catch (error) {
-    res.json(error.message);
+    res.json(error);
   }
 }
 
