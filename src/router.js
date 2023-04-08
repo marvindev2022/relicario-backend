@@ -20,21 +20,10 @@ const {
   realizarLogin,
   listarUsuario,
   listarUsuarios,
-} = require("./controllers/usuarios.controller");
-const {
-  listarCategorias,
-  listarExtrato,
-  listarTransacoes,
-  cadastrarTransacao,
-  deletarTransacaoID,
-  detalharTransacaoID,
-  atualizarTransacaoID,
-} = require("./controllers/functions");
+} = require("./controllers/usuarios");
+const { listarCategorias } = require("./controllers/categrias");
 const validarToken = require("./middlewares/validarToken");
-const {
-  realizarLoginADM,
-  cadastrarADM,
-} = require("./controllers/adm.controller");
+const { realizarLoginADM, cadastrarADM } = require("./controllers/adm");
 const router = express();
 
 router.post("/usuario", cadastrarUsuario);
@@ -52,13 +41,6 @@ router.use(validarToken);
 router.get("/usuario/", listarUsuarios);
 router.get("/usuario/:id", listarUsuario);
 router.put("/usuario/:id/editar", alterarCadastro);
-
-router.get("/transacoes", listarTransacoes);
-router.get("/transacao/extrato", listarExtrato);
-router.get("/transacao/:id", detalharTransacaoID);
-router.post("/transacao", cadastrarTransacao);
-router.put("/transacao/:id", atualizarTransacaoID);
-router.delete("/transacao/:id", deletarTransacaoID);
 
 /*ADM*/
 router.post("/produtos", cadastrarProduto);

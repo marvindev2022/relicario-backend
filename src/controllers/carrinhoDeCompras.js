@@ -12,11 +12,15 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
       tipoEnvio,
       custoEnvio,
     } = req.body;
-
+    
     if (
-      [nome, imagem, produtoId, quantidade, valorTotal, tipoEnvio].every(
-        Boolean
-      )
+      !nome ||
+      !imagem ||
+      !produtoId ||
+      !quantidade ||
+      !valorTotal ||
+      !tipoEnvio ||
+      !custoEnvio
     ) {
       return res.status(401).json({ mensagem: "Preencha todos os campos!" });
     }
