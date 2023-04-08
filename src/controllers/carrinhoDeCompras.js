@@ -41,10 +41,10 @@ async function adicionarAoCarrinhoDeCompras(req, res) {
         `UPDATE transacoes SET quantidade = $1, valor_total = $2 WHERE produto_id = $3 RETURNING *`,
         [newQuantity, newPrice, produtoId]
       );
+
       if (updatedRows[0].quantidade < 1)
         await pool.query(
-          `DELETE FROM transacoes WHERE quantidade < 1;
-`
+          `DELETE FROM transacoes WHERE quantidade < 1`
         );
 
       return res.status(200).json(updatedRows[0]);
@@ -87,7 +87,7 @@ async function listarCarrinhoDeCompras(req, res) {
   } catch (error) {
     return res
       .status(500)
-      .json({ mensagem: "Ocorreu um erro interno no servidor." });
+      .json({error});
   }
 }
 
