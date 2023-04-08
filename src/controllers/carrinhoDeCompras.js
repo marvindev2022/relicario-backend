@@ -85,7 +85,6 @@ async function listarCarrinhoDeCompras(req, res) {
 
     return res.status(200).json(rows);
   } catch (error) {
-    console.error(error);
     return res
       .status(500)
       .json({ mensagem: "Ocorreu um erro interno no servidor." });
@@ -98,7 +97,7 @@ async function deletarProdutoCarrinho(req, res) {
       `DELETE FROM transacoes WHERE quantidade < 1;
 `
     );
-    res.json("ok");
+    res.json("deletei");
   } catch (error) {
     res.status(500).json(error);
   }

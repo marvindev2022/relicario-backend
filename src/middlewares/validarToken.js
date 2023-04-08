@@ -21,7 +21,7 @@ async function validarToken(req, res, next) {
       return res.status(401).json({ mensagem: "Usuario Não autorizado" });
 
     req.usuario = rows[0];
-
+      console.log(req.usuario)
     next();
   } catch (error) {
     res.json(error);
