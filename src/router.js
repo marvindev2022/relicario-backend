@@ -26,6 +26,7 @@ const { listCategories } = require("./controllers/categrias");
 const validateToken = require("./middlewares/validarToken");
 const router = express();
 
+router.post("/", (req,res)=> res.json("online"));
 router.post("/usuario", registerUser);
 router.post("/login", login);
 
