@@ -1,14 +1,13 @@
-const pool = require("../service/instance");
+const knex = require("../service/instance");
 
-
-async function listarCategorias(_, res) {
+async function listCategories(_, res) {
   try {
-    const { rows:categorias } = await pool.query(`SELECT * FROM categorias;`);
-    const { rows:subcategorias } = await pool.query(`SELECT * FROM subcategorias;`);
+    const categories = await knex.select().from("categorias");
+    const subcategories = await knex.select().from("subcategorias");
 
     return res.status(200).json({
-      categorias,
-      subcategorias
+      categories,
+      subcategories,
     });
   } catch (error) {
     return res.status(500).json(error.message);
@@ -16,6 +15,5 @@ async function listarCategorias(_, res) {
 }
 
 module.exports = {
-  listarCategorias,
-  
+  listCategories,
 };

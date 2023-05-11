@@ -1,110 +1,113 @@
-const pool = require("../service/instance");
+const knex = require("../service/instance");
 
-async function adicionarAoCarrinhoDeCompras(req, res) {
+
+
+
+
+
+
+
+
+async function addToShoppingCart(req, res) {
   try {
-    const { id } = req.usuario;
+    const { id } = req.user;
     const {
-      nome,
-      imagem,
-      produtoId,
-      quantidade,
-      valorTotal,
-      tipoEnvio,
-      custoEnvio,
+      nome:name,
+      imagem:image,
+      produtoId:productId,
+      quantidade:quantity,
+      valorTotal:totalPrice,
+      tipoEnvio:shippingType,
+      custoEnvio:shippingCost,
     } = req.body;
 
     if (
-      !nome ||
-      !imagem ||
-      !produtoId ||
-      !quantidade ||
-      !valorTotal ||
-      !tipoEnvio ||
-      !custoEnvio
+      !name ||
+      !image ||
+      !productId ||
+      !quantity ||
+      !totalPrice ||
+      !shippingType ||
+      !shippingCost
     ) {
-      return res.status(401).json({ mensagem: "Preencha todos os campos!" });
+      return res.status(401).json({ message: "Fill all fields!" });
     }
 
-    const { rows } = await pool.query(
-      `SELECT * FROM transacoes WHERE usuario_id = $1 AND produto_id = $2`,
-      [id, produtoId]
-    );
+    const rows = await knex("transactions")
+      .where("user_id", id)
+      .andWhere("product_id", productId);
 
     if (rows.length) {
       const { quantidade: existingQuantity, valor_total: existingPrice } =
         rows[0];
 
-      const newQuantity = parseFloat(existingQuantity) + quantidade;
+      const newQuantity = parseFloat(existingQuantity) + quantity;
       const newPrice = parseFloat(existingPrice);
 
-      const { rows: updatedRows } = await pool.query(
-        `UPDATE transacoes SET quantidade = $1, valor_total = $2 WHERE produto_id = $3 RETURNING *`,
-        [newQuantity, newPrice, produtoId]
-      );
+      const updatedRows = await knex("transactions")
+        .where("product_id", productId)
+        .update({ quantidade: newQuantity, valor_total: newPrice })
+        .returning("*");
 
-      if (updatedRows[0].quantidade < 1)
-        await pool.query(
-          `DELETE FROM transacoes WHERE quantidade < 1`
-        );
+      if (updatedRows[0].quantidade < 1) {
+        await knex("transactions")
+          .where("quantidade", "<", 1)
+          .delete();
+      }
 
       return res.status(200).json(updatedRows[0]);
     } else {
-      const { rows: insertedRows } = await pool.query(
-        `INSERT INTO transacoes (usuario_id,nome,imagem, produto_id, quantidade, valor_total, custo_envio, tipo_envio)
-        VALUES ($1, $2, $3, $4, $5, $6,$7,$8) RETURNING *`,
-        [
-          id,
-          nome,
-          imagem,
-          produtoId,
-          quantidade,
-          valorTotal,
-          custoEnvio ?? 0,
-          tipoEnvio,
-        ]
-      );
+      const insertedRows = await knex("transactions")
+        .insert({
+          user_id: id,
+          nome:name,
+          imagem:image,
+          produto_id: productId,
+          quantidade: quantity,
+          valor_total: totalPrice,
+          custo_envio: shippingCost ?? 0,
+          tipo_envio: shippingType,
+        })
+        .returning("*");
 
       return res.status(200).json(insertedRows[0]);
     }
   } catch (error) {
     console.error(error);
-    return res
-      .status(500)
-      .json({ mensagem: "Ocorreu um erro interno no servidor." });
+    return res.status(500).json({ message: "Internal server error." });
   }
 }
 
-async function listarCarrinhoDeCompras(req, res) {
+
+async function listShoppingCart(req, res) {
   try {
-    const { id } = req.usuario;
+    const { id } = req.user;
 
-    const { rows } = await pool.query(
-      `SELECT * FROM transacoes WHERE usuario_id = $1`,
-      [id]
-    );
+    const shoppingCartItems = await knex
+      .select()
+      .from("transacoes")
+      .where({ usuario_id: id });
 
-    return res.status(200).json(rows);
+    return res.status(200).json(shoppingCartItems);
   } catch (error) {
-    return res
-      .status(500)
-      .json({error});
+    return res.status(500).json({ error });
   }
 }
 
-async function deletarProdutoCarrinho(req, res) {
+module.exports = {
+};
+
+async function deleteProductFromCart(req, res) {
   try {
-    await pool.query(
-      `DELETE FROM transacoes WHERE quantidade < 1;
-`
-    );
-    res.json("deletei");
+    await pool.query(`DELETE FROM transactions WHERE quantity < 1`);
+    res.json("Deleted successfully");
   } catch (error) {
     res.status(500).json(error);
   }
 }
 
 module.exports = {
-  adicionarAoCarrinhoDeCompras,
-  deletarProdutoCarrinho,
-  listarCarrinhoDeCompras,
+  addToShoppingCart,
+  listShoppingCart,
+  deleteProductFromCart
 };

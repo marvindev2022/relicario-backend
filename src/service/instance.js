@@ -1,9 +1,13 @@
-const { Pool } = require("pg");
+const knex = require("knex");
+require("dotenv").config();
 
-const pool = new Pool({
-  user: "yfajfrbz",
-  password: "YJlbQxq1LGvmaqtNuQkNcai-tEqBesGl",
-  host: "mahmud.db.elephantsql.com",
+module.exports = knex({
+  client: "pg",
+  connection: {
+    host: "mahmud.db.elephantsql.com",
+    user: "yfajfrbz",
+    password: "YJlbQxq1LGvmaqtNuQkNcai-tEqBesGl",
+    port: 5432,
+    database: "yfajfrbz",
+  },
 });
-
-module.exports = pool;

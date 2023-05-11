@@ -1,57 +1,57 @@
 const express = require("express");
+const { loginAdmin, registerAdmin } = require("./controllers/adm");
 const {
-  atualizarProduto,
-  buscarProdutoPorId,
-  cadastrarProduto,
-  deletarProduto,
-  listarProdutos,
-  listarDestaques,
-  modificarPreco,
-  modificarQuantidade,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  listProducts,
+  getProductById,
+  updateProductPrice,
+  modifyQuantity,
+  listHighlights,
 } = require("./controllers/produtos");
 const {
-  listarCarrinhoDeCompras,
-  adicionarAoCarrinhoDeCompras,
-  deletarProdutoCarrinho,
-} = require("./controllers/carrinhoDeCompras.js");
-const {
-  alterarCadastro,
-  cadastrarUsuario,
-  realizarLogin,
-  listarUsuario,
-  listarUsuarios,
+  updateUser,
+  registerUser,
+  login,
+  getUser,
+  listUsers,
 } = require("./controllers/usuarios");
-const { listarCategorias } = require("./controllers/categrias");
-const validarToken = require("./middlewares/validarToken");
-const { realizarLoginADM, cadastrarADM } = require("./controllers/adm");
+const {
+  addToShoppingCart,
+  listShoppingCart,
+  deleteProductFromCart,
+} = require("./controllers/carrinhoDeCompras.js");
+const { listCategories } = require("./controllers/categrias");
+const validateToken = require("./middlewares/validarToken");
 const router = express();
 
-router.post("/usuario", cadastrarUsuario);
-router.post("/login", realizarLogin);
+router.post("/usuario", registerUser);
+router.post("/login", login);
 
-router.post("/login/admcontroller", realizarLoginADM);
-router.post("/adm/sign-up", cadastrarADM);
+router.post("/login/admcontroller", loginAdmin);
+router.post("/adm/sign-up", registerAdmin);
 
-router.get("/produtos", listarProdutos);
-router.get("/destaques", listarDestaques);
-router.get("/categorias", listarCategorias);
+router.get("/produtos", listProducts);
+router.get("/destaques", listHighlights);
+router.get("/categorias", listCategories);
 
-router.use(validarToken);
+router.use(validateToken);
 
-router.get("/usuario/", listarUsuarios);
-router.get("/usuario/:id", listarUsuario);
-router.put("/usuario/:id/editar", alterarCadastro);
+router.get("/usuario/", listUsers);
+router.get("/usuario/:id", getUser);
+router.put("/usuario/:id/editar", updateUser);
 
 /*ADM*/
-router.post("/produtos", cadastrarProduto);
-router.get("/produtos/:id", buscarProdutoPorId);
-router.put("/produtos/:id", atualizarProduto);
-router.delete("/produtos/:id", deletarProduto);
-router.patch("/produtos/:id/modificar-preco", modificarPreco);
-router.patch("/produtos/:id/modificar-quantidade", modificarQuantidade);
+router.post("/produtos", createProduct);
+router.get("/produtos/:id", getProductById);
+router.put("/produtos/:id", updateProduct);
+router.delete("/produtos/:id", deleteProduct);
+router.patch("/produtos/:id/modificar-preco", updateProductPrice);
+router.patch("/produtos/:id/modificar-quantidade", modifyQuantity);
 
-router.post("/carrinho", adicionarAoCarrinhoDeCompras);
-router.delete("/carrinho", deletarProdutoCarrinho);
-router.get("/carrinho", listarCarrinhoDeCompras);
+router.post("/carrinho", addToShoppingCart);
+router.delete("/carrinho", deleteProductFromCart);
+router.get("/carrinho", listShoppingCart);
 
 module.exports = router;

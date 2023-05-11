@@ -1,255 +1,214 @@
-const pool = require("../service/instance");
+const knex = require("../service/instance");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const senhaSegura = require("../security/senhaSegura");
+require("dotenv").config();
 
-async function cadastrarUsuario(req, res) {
+async function registerUser(req, res) {
   const emailRegex = /^\S+@\S+\.\S+$/;
   const {
-    nome,
-    email,
-    senha,
-    cpf,
-    data_nascimento,
-    telefone,
-    logradouro,
-    numero,
-    complemento,
-    bairro,
-    cidade,
-    estado,
-    cep,
+    nome: name,
+    email: email,
+    senha: password,
+    cpf: cpf,
+    data_nascimento: birthdate,
+    telefone: phone,
+    logradouro: street,
+    numero: number,
+    complemento: complement,
+    bairro: neighborhood,
+    cidade: city,
+    estado: state,
+    cep: zip_code,
   } = req.body;
   if (
-    !nome ||
+    !name ||
     !email ||
-    !senha ||
-    !cpf ||
-    !data_nascimento ||
-    !telefone ||
-    !logradouro ||
-    !numero ||
-    !complemento ||
-    !bairro ||
-    !cidade ||
-    !estado ||
-    !cep
+    !password 
+   
   )
     return res.json("Preencha todos os campos!");
   if (!emailRegex.test(email)) {
-    return res.status(400).json({ mensagem: "Informe um e-mail válido" });
+    return res.status(400).json({ message: "Informe um email valido!" });
   }
 
   try {
-    const senhaCryptografada = await bcrypt.hash(senha, 10);
+    const encryptedPassword = await bcrypt.hash(password, 10);
 
-    const insertUser = await pool.query(
-      `INSERT INTO usuarios (
-    nome,
-    email,
-    senha,
-    cpf,
-    data_nascimento,
-    telefone,
-    logradouro,
-    numero,
-    complemento,
-    bairro,
-    cidade,
-    estado,
-    cep
-  ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *`,
-      [
-        nome,
+    const [user] = await knex("usuarios")
+      .insert({
+        nome: name,
         email,
-        senhaCryptografada,
+        senha: encryptedPassword,
         cpf,
-        data_nascimento,
-        telefone,
-        logradouro,
-        numero,
-        complemento,
-        bairro,
-        cidade,
-        estado,
-        cep,
-      ]
-    );
-    const usuario = insertUser.rows[0];
+        data_nascimento: birthdate,
+        telefone: phone,
+        logradouro: street,
+        numero: number,
+        complemento: complement,
+        bairro: neighborhood,
+        cidade: city,
+        estado: state,
+        cep: zip_code,
+      })
+      .returning(["*"]);
+
     return res.json({
-      id: usuario.id,
-      nome: usuario.nome,
-      email: usuario.email,
-      cpf: usuario.cpf,
-      data_nascimento: usuario.data_nascimento,
-      telefone: usuario.telefone,
-      logradouro: usuario.logradouro,
-      numero: usuario.numero,
-      complemento: usuario.complemento,
-      bairro: usuario.bairro,
-      cidade: usuario.cidade,
-      estado: usuario.estado,
-      cep: usuario.cep,
+      id: user.id,
+      name: user.nome,
+      email: user.email,
+      cpf: user.cpf,
+      birthdate: user.data_nascimento,
+      phone: user.telefone,
+      street: user.logradouro,
+      number: user.numero,
+      complement: user.complemento,
+      neighborhood: user.bairro,
+      city: user.cidade,
+      state: user.estado,
+      zip_code: user.cep,
     });
   } catch (error) {
     if (
       error.message ===
       `duplicate key value violates unique constraint "usuarios_email_key"`
     )
-      return res.status(400).json({ mensagem: "Email já cadastrado" });
+      return res.status(400).json({ message: "Email já existe no cadastro!" });
 
-    return res.status(500).json({ mensagem: error.message });
+    return res.status(500).json({ message: error.message });
   }
 }
 
-async function realizarLogin(req, res) {
-  const { email, senha } = req.body;
+async function login(req, res) {
+  const { email, password } = req.body;
 
-  if ([email, senha].includes("undefined"))
-    return res
-      .status(400)
-      .json({ mensagem: "Todos os campos devem ser preenchidos!" });
+  if ([email, password].includes(undefined)) {
+    return res.status(400).json({ message: "All fields must be filled!" });
+  }
 
   try {
-    const queryInsert = `SELECT * FROM usuarios WHERE email = $1`;
-    const params = [email];
-    const { rows, rowCount } = await pool.query(queryInsert, params);
-    const senhaValida = await bcrypt.compare(senha, rows[0].senha);
+    const user = await knex("usuarios").where("email", email).first();
 
-    if (rowCount < 1 || !senhaValida)
-      return res.status(400).json({ mensagem: "Email/Senha invalido!" });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid email/password!" });
+    }
+
+    const passwordIsValid = await bcrypt.compare(password, user.senha);
+
+    if (!passwordIsValid) {
+      return res.status(400).json({ message: "Invalid email/password!" });
+    }
 
     const token = jwt.sign(
-      { id: rows[0].id, nome: rows[0].nome },
-      senhaSegura,
+      { id: user.id, name: user.nome },
+      process.env.JWT_SECRET,
       {
         expiresIn: "30d",
       }
     );
 
-    const { senha: _, ...usuarioLogado } = rows[0];
-    return res.json({ usuarioLogado, token });
+    const { senha: _, ...loggedInUser } = user;
+    return res.json({ user: loggedInUser, token });
   } catch (error) {
     if (
       error.message.includes(
         `Cannot read properties of undefined (reading 'senha')`
       )
-    )
-      return res.status(401).json({ mensagem: "Email/Senha invalido!" });
+    ) {
+      return res.status(401).json({ message: "Invalid email/password!" });
+    }
+    console.log(error)
     return res.status(500).json(error.message);
   }
 }
 
-async function alterarCadastro(req, res) {
+async function updateUser(req, res) {
   const { id } = req.params;
   const {
-    nome,
-    email,
-    senha,
-    cpf,
-    data_nascimento,
-    telefone,
-    logradouro,
-    numero,
-    complemento,
-    bairro,
-    cidade,
-    estado,
-    cep,
+    nome: name,
+    email: email,
+    senha: password,
+    cpf: cpf,
+    data_nascimento: birthdate,
+    telefone: phone,
+    logradouro: street,
+    numero: number,
+    complemento: complement,
+    bairro: neighborhood,
+    cidade: city,
+    estado: state,
+    cep: zip_code,
   } = req.body;
 
   try {
     if (
       [
-        nome,
+        name,
         email,
-        senha,
+        password,
         cpf,
-        data_nascimento,
-        telefone,
-        logradouro,
-        numero,
-        complemento,
-        bairro,
-        cidade,
-        estado,
-        cep,
+        birthdate,
+        phone,
+        street,
+        number,
+        complement,
+        neighborhood,
+        city,
+        state,
+        zip_code,
       ].includes(undefined)
     ) {
-      return res.status(400).json("Preencha todos os campos");
+      return res.status(400).json({ message: "Fill in all fields" });
     }
 
-    const senhaCryptografada = await bcrypt.hash(senha, 10);
+    const encryptedPassword = await bcrypt.hash(password, 10);
 
-    const params = [
-      nome,
-      email,
-      senhaCryptografada,
-      cpf,
-      data_nascimento,
-      telefone,
-      logradouro,
-      numero,
-      complemento,
-      bairro,
-      cidade,
-      estado,
-      cep,
-      id,
-    ];
+    const data = await knex("users")
+      .where("id", id)
+      .update({
+        email: email,
+        senha: password,
+        cpf: cpf,
+        data_nascimento: birthdate,
+        telefone: phone,
+        logradouro: street,
+        numero: number,
+        complemento: complement,
+        bairro: neighborhood,
+        cidade: city,
+        estado: state,
+        cep: zip_code,
+      })
+      .returning("*");
 
-    const data = await pool.query(
-      `UPDATE usuarios SET 
-    nome = $1, 
-    email = $2, 
-    senha = $3,
-    cpf = $4,
-    data_nascimento = $5,
-    telefone = $6,
-    logradouro = $7,
-    numero = $8,
-    complemento = $9,
-    bairro = $10,
-    cidade = $11,
-    estado = $12,
-    cep = $13
-  WHERE id = $14 RETURNING *;`,
-      params
-    );
-
-    res.status(200).json(data.rows[0]);
+    res.status(200).json(data[0]);
   } catch (error) {
-    res.status(500).json(error.message);
+    res.status(500).json({ message: error.message });
+  }
+}
+async function listUsers(req, res) {
+  try {
+    const users = await knex("usuarios").select("*");
+    return res.json(users);
+  } catch (error) {
+    return res.status(500).json({ mensagem: error.message });
   }
 }
 
-async function listarUsuarios(req, res) {
-  try {
-    const usuarios = await pool.query(`SELECT * FROM usuarios`);
-
-    return res.json(usuarios.rows);
-  } catch (error) {
-    return res.status(500).json(error.message);
-  }
-}
-async function listarUsuario(req, res) {
-  const { id } = req.usuario;
+async function getUser(req, res) {
+  const { id } = req.user;
 
   try {
-    const usuarios = await pool.query(`SELECT * FROM usuarios WHERE id = $1;`, [
-      id,
-    ]);
-
-    return res.json(usuarios.rows);
+    const user = await knex("usuarios").select("*").where({ id }).first();
+    return res.json(user);
   } catch (error) {
-    return res.status(500).json(error.message);
+    return res.status(500).json({ mensagem: error.message });
   }
 }
 
 module.exports = {
-  cadastrarUsuario,
-  realizarLogin,
-  alterarCadastro,
-  listarUsuario,
-  listarUsuarios,
+  registerUser,
+  login,
+  updateUser,
+  listUsers,
+  getUser,
 };

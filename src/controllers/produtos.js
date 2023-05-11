@@ -1,239 +1,235 @@
-const pool = require("../service/instance");
+const knex = require("../service/instance");
 
-async function cadastrarProduto(req, res) {
+async function createProduct(req, res) {
   const {
-    nome,
-    descricao,
-    preco,
-    subcategoria_id,
-    categoria_id,
-    quantidade,
-    imagem,
+    nome: name,
+    descricao: description,
+    preco: price,
+    subcategoria_id: subcategory_id,
+    categoria_id: category_id,
+    quantidade: quantity,
+    imagem: image,
   } = req.body;
 
   try {
     if (
-      !nome ||
-      !descricao ||
-      !preco ||
-      !subcategoria_id ||
-      !categoria_id ||
-      !quantidade
+      !name ||
+      !description ||
+      !price ||
+      !subcategory_id ||
+      !category_id ||
+      !quantity
     ) {
-      return res
-        .status(400)
-        .json({ mensagem: "Todos os campos devem ser preenchidos!" });
+      return res.status(400).json({ message: "All fields must be filled!" });
     }
 
-    if (preco < 0) {
+    if (price < 0) {
       return res
         .status(400)
-        .json({ mensagem: "O preço deve ser maior ou igual a zero!" });
+        .json({ message: "Price must be greater or equal to zero!" });
     }
 
-    const { rows: insertData } = await pool.query(
-      `INSERT INTO produtos (nome, descricao, preco, subcategoria_id,categoria_id ,quantidade,imagem) VALUES ($1, $2, $3, $4,$5,$6,$7) RETURNING *;`,
-      [
-        nome,
-        descricao,
-        preco,
-        subcategoria_id,
-        categoria_id,
-        quantidade,
-        imagem,
-      ]
-    );
+    const [insertData] = await knex("produtos")
+      .insert({
+        nome: name,
+        descricao: description,
+        preco: price,
+        subcategoria_id: subcategory_id,
+        categoria_id: category_id,
+        quantidade: quantity,
+        imagem: image,
+      })
+      .returning("*");
 
-    return res.status(201).json({
-      id: insertData[0].id,
-      nome: insertData[0].nome,
-      descricao: insertData[0].descricao,
-      preco: insertData[0].preco,
-      subcategoria_id: insertData[0].subcategoria_id,
-      categoria_id: insertData[0].categoria_id,
-      quantidade: insertData[0].quantidade,
-      imagem: insertData[0].imagem,
-    });
+    return res.status(201).json(insertData);
   } catch (error) {
     res.status(500).json(error.message);
   }
 }
 
-async function atualizarProduto(req, res) {
+async function updateProduct(req, res) {
   const { id } = req.params;
   const {
-    nome,
-    descricao,
-    preco,
-    subcategoria_id,
-    categoria_id,
-    quantidade,
-    imagem,
+    nome: name,
+    descricao: description,
+    preco: price,
+    subcategoria_id: subcategory_id,
+    categoria_id: category_id,
+    quantidade: quantity,
+    imagem: image,
   } = req.body;
 
   try {
     if (
-      !nome ||
-      !descricao ||
-      !preco ||
-      !subcategoria_id ||
-      !categoria_id ||
-      !quantidade
+      !name ||
+      !description ||
+      !price ||
+      !subcategory_id ||
+      !category_id ||
+      !quantity
     ) {
+      return res.status(400).json({ message: "All fields must be filled in!" });
+    }
+
+    if (price < 0) {
       return res
         .status(400)
-        .json({ mensagem: "Todos os campos devem ser preenchidos!" });
+        .json({ message: "Price must be greater than or equal to zero!" });
     }
 
-    if (preco < 0) {
-      return res
-        .status(400)
-        .json({ mensagem: "O preço deve ser maior ou igual a zero!" });
+    const [produtoExistente] = await knex("produtos").select().where("id", id);
+
+    if (!produtoExistente) {
+      return res.status(404).json({ message: "Product not found" });
     }
 
-    const { rows: produtoExistente } = await pool.query(
-      `SELECT * FROM produtos WHERE id = $1`,
-      [id]
+    const updatedProduct = await knex("produtos").where("id", id).update(
+      {
+        nome: name,
+        descricao: description,
+        preco: price,
+        subcategoria_id: subcategory_id,
+        categoria_id: category_id,
+        quantidade: quantity,
+        imagem: image,
+      },
+      [
+        "id",
+        "nome",
+        "descricao",
+        "preco",
+        "subcategoria_id",
+        "categoria_id",
+        "quantidade",
+        "imagem",
+      ]
     );
 
-    if (!produtoExistente[0]) {
-      return res.status(404).json({ mensagem: "Produto não encontrado" });
-    }
-
-    const params = [
-      nome,
-      descricao,
-      preco,
-      subcategoria_id,
-      categoria_id,
-      quantidade,
-      imagem,
-      id,
-    ];
-
-    const { rows: produtoAtualizado } = await pool.query(
-      `UPDATE produtos SET nome = $1, descricao = $2, preco = $3, subcategoria_id = $4, categoria_id = $5, quantidade = $6 ,imagem = $7 WHERE id = $8 RETURNING *`,
-      params
-    );
-
-    res.status(200).json(produtoAtualizado[0]);
+    res.status(200).json(updatedProduct[0]);
   } catch (error) {
-    res.status(500).json({ mensagem: error.message });
+    res.status(500).json({ message: error.message });
   }
 }
 
-async function deletarProduto(req, res) {
+async function deleteProduct(req, res) {
   const { id } = req.params;
 
   try {
-    const { rowCount } = await pool.query(
-      "DELETE FROM produtos WHERE id = $1",
-      [id]
-    );
+    const deletedRows = await knex("produtos").where({ id }).del();
 
-    if (rowCount === 0) {
-      return res.status(404).json({ mensagem: "Produto não encontrado" });
+    if (deletedRows === 0) {
+      return res.status(404).json({ message: "Product not found" });
     }
 
     return res.status(204).end();
   } catch (error) {
-    return res.status(500).json({ mensagem: error.message });
+    return res.status(500).json({ message: error.message });
   }
 }
 
-async function listarProdutos(req, res) {
+async function listProducts(req, res) {
   try {
-    const { rows } = await pool.query(
-      `SELECT p.*, s.descricao as subcategoria_nome, c.descricao as categoria_nome
-FROM produtos p
-JOIN subcategorias s ON p.subcategoria_id = s.id
-JOIN categorias c ON p.categoria_id = c.id;
+    const products = await knex
+      .select(
+        "p.*",
+        "s.descricao as subcategoria_nome",
+        "c.descricao as categoria_nome"
+      )
+      .from("produtos as p")
+      .join("subcategorias as s", "p.subcategoria_id", "=", "s.id")
+      .join("categorias as c", "p.categoria_id", "=", "c.id");
+;
 
-`
-    );
-    res.json(rows);
+    res.json(products);
   } catch (error) {
-    res.status(500).json(error.message);
+    res.status(500).json({ message: error.message });
   }
 }
 
-async function buscarProdutoPorId(req, res) {
+async function getProductById(req, res) {
   const { id } = req.params;
 
   try {
-    const { rows } = await pool.query(
-      `SELECT p.*, s.descricao as subcategoria_nome FROM produtos p 
-      JOIN subcategorias s ON p.subcategoria_id = s.id WHERE p.id = $1`,
-      [id]
-    );
+    const product = await knex("produtos as p")
+      .select("p.*", "s.descricao as subcategoria_nome")
+      .join("subcategorias as s", "p.subcategoria_id", "=", "s.id")
+      .where("p.id", id)
+      .first();
 
-    if (rows.length === 0) {
-      return res.status(404).json({ mensagem: "Produto não encontrado" });
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
     }
 
-    res.json(rows[0]);
+    res.json(product);
   } catch (error) {
-    res.status(500).json(error.message);
+    res.status(500).json({ message: error.message });
   }
 }
 
-async function modificarPreco(req, res) {
+async function updateProductPrice(req, res) {
   const { id } = req.params;
-  const { preco } = req.body;
+  const { preco: price } = req.body;
 
   try {
-    const params = [preco, id];
+    const updatedProduct = await knex("produtos")
+      .where({ id })
+      .update({ preco: price })
+      .returning("*");
 
-    const data = await pool.query(
-      `UPDATE produtos SET preco = $1 WHERE id = $2 RETURNING *;`,
-      params
-    );
+    if (!updatedProduct[0]) {
+      return res.status(404).json({ message: "Product not found" });
+    }
 
-    res.status(200).json(data.rows[0]);
+    res.status(200).json(updatedProduct[0]);
   } catch (error) {
-    res.json(error.message);
+    res.status(500).json({ message: error.message });
   }
 }
 
-async function modificarQuantidade(req, res) {
+async function modifyQuantity(req, res) {
   const { id } = req.params;
-  const { quantidade } = req.body;
+  const { quantity } = req.body;
+
   try {
-    if (typeof quantidade === "undefined") {
-      return res.status(400).json({ error: "A quantidade deve ser informada" });
+    if (typeof quantity === "undefined") {
+      return res.status(400).json({ error: "Quantity must be informed" });
     }
 
-    const params = [quantidade, id];
-    const result = await pool.query(
-      "UPDATE produtos SET quantidade = $1 WHERE id = $2 RETURNING *;",
-      params
-    );
+    const result = await knex("produtos")
+      .where({ id })
+      .update({ quantidade: quantity })
+      .returning("*");
 
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Produto não encontrado" });
+    if (result.length === 0) {
+      return res.status(404).json({ error: "Product not found" });
     }
 
-    res.status(200).json(result.rows[0]);
+    res.status(200).json(result[0]);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 }
-async function listarDestaques(req, res) {
+
+async function listHighlights(req, res) {
   try {
-    const { rows } = await pool.query("select * from destaques");
-    if (rows.length > 0) return res.json(rows);
+    const result = await knex("destaques");
+
+    if (result.length > 0) {
+      return res.json(result);
+    }
   } catch (error) {
     res.status(500).json({ error });
   }
 }
 
 module.exports = {
-  listarProdutos,
-  listarDestaques,
-  buscarProdutoPorId,
-  cadastrarProduto,
-  atualizarProduto,
-  deletarProduto,
-  modificarPreco,
-  modificarQuantidade,
+
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  listProducts,
+  getProductById,
+  updateProductPrice,
+  modifyQuantity,
+  listHighlights,
 };
