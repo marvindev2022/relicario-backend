@@ -1,23 +1,12 @@
 {
   "name": "relicario-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "engines": {
+    "node": "14.x"
+  },
   "scripts": {
-    "dev": "nodemon ./src/index",
-    "start": "node ./src/index"
+    "start": "node src/index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/marvindev2022/relicario-backend.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/marvindev2022/relicario-backend/issues"
-  },
-  "homepage": "https://github.com/marvindev2022/relicario-backend#readme",
-  "description": "",
   "dependencies": {
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
@@ -30,8 +19,5 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
-  },
-  "engines": {
-    "node": "14.x"
   }
 }
