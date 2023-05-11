@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "<NOME DO SEU PROJETO AQUI",
+  "name": "relicario-backend",
   "builds": [
     {
       "src": "src/index.js",
