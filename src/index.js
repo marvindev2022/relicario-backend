@@ -8,4 +8,4 @@ const app = express();
 
 app.use(express.json(), cors(), router);
 
-app.listen(port,()=>console.log("online no heroku"));
+app.listen(port,()=>console.log("online na vercel"));
